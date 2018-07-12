@@ -7,8 +7,7 @@ from .models import *
 
 @admin.register(Couple)
 class CoupleAdmin(admin.ModelAdmin):
-    pass
-
+    list_display = ('name', 'imps')
 
 @admin.register(Board)
 class BoardAdmin(admin.ModelAdmin):
@@ -17,5 +16,5 @@ class BoardAdmin(admin.ModelAdmin):
 
 @admin.register(Result)
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ('board', 'ns_couple', 'ew_couple', 'score')
+    list_display = ('board', 'ns_couple', 'ew_couple', 'score', 'ns_imps')
     list_filter = ('board',)

@@ -13,6 +13,10 @@ class Couple(models.Model):
     def __str__(self):
         return self.name
 
+    
+    def imps(self):
+        return sum(result.couples_imps()[self] for result in Result.objects.all())
+
 
 class Board(models.Model):
     number = models.IntegerField()
@@ -23,17 +27,6 @@ class Board(models.Model):
     class Meta:
         ordering = ('number',)
     
-    
-    def get_imps(self):
-        imps = Counter()
-        
-        for result in self.results:
-            couples = result.couples()
-            score = result.score
-            
-            for r in self.results:
-                s = r.score
-                score_to_imps(score-s)
 
 
 class Result(models.Model):
@@ -49,3 +42,24 @@ class Result(models.Model):
     
     def couples(self):
         return (self.ns_couple, self.ew_couple)
+    
+    
+    def ns_imps(self):
+        """
+        Return imps of the NS couple.
+        """
+        total_imps = sum(score_to_imps(self.score-r.score) for r in self.board.result_set.all())
+        normalized_imps = float(total_imps) / (self.board.result_set.count() - 1) if self.board.result_set.count() > 1 else 0.0
+        return normalized_imps
+    
+    
+    def couples_imps(self):
+        imps = Counter()
+        
+        couples = self.couples()
+        for i in xrange(2):
+            imps[couples[i]] = (-1)**i * self.ns_imps()
+        
+        return imps
+
+
