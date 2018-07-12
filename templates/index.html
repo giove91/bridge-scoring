@@ -22,10 +22,10 @@
 
     <!-- MathJax -->
      <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-MML-AM_CHTML'></script>
-    
-    {% comment %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.0" />
-    {% endcomment %}
+     
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'style.css' %}?v=1.0" />
 </head>
 
 
@@ -41,7 +41,7 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Pair</th>
-      <th scope="col">IMPs</th>
+      <th class="text-center" scope="col">IMPs</th>
       {% for board in boards %}
         <th class="text-center" scope="col">{{ board.number }}</th>
       {% endfor %}
@@ -52,10 +52,10 @@
     <tr>
       <th scope="row">{{ rank }}</th>
       <td>{{ couple.name }}</td>
-      <td>{{ imps|floatformat:1 }}</td>
+      <td class="text-center">{{ imps|floatformat:-1 }}</td>
       
       {% for b_imps in boards_imps %}
-        <td class="text-center {% if b_imps is not None %}{% if b_imps > 0 %}table-success{% elif b_imps < 0 %}table-danger{% else %}table-secondary{% endif %}{% endif %}">{% if b_imps is not None %}{{ b_imps|floatformat:1 }}{% endif %}</td>
+        <td class="text-center {% if b_imps is not None %}{% if b_imps > 0 %}table-success{% elif b_imps < 0 %}table-danger{% else %}table-secondary{% endif %}{% endif %}">{% if b_imps is not None %}{{ b_imps|floatformat:-1 }}{% endif %}</td>
       {% endfor %}
     </tr>
     {% endfor %}
