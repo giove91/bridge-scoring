@@ -2,9 +2,11 @@
 from __future__ import unicode_literals
 
 from collections import Counter
+from fractions import Fraction
 from django.db import models
 
 from score_to_imps import score_to_imps
+from django.db.models import Q
 
 
 class Couple(models.Model):
@@ -27,12 +29,32 @@ class Board(models.Model):
     class Meta:
         ordering = ('number',)
     
+    
+    def couple_result(self, couple):
+        results = Result.objects.filter(board=self).filter(Q(ns_couple=couple) | Q(ew_couple=couple)).all()
+        
+        if len(results) == 0:
+            return None
+        
+        else:
+            [result] = results
+            return result
+    
+    
+    def couple_imps(self, couple):
+        result = self.couple_result(couple)
+        
+        if result is not None:
+            return result.couple_imps(couple)
+        else:
+            return None
+    
 
 
 class Result(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    ns_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, verbose_name="NS couple", related_name="ns_results")
-    ew_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, verbose_name="EW couple", related_name="ew_results")
+    ns_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, verbose_name="NS pair", related_name="ns_results")
+    ew_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, verbose_name="EW pair", related_name="ew_results")
     score = models.IntegerField(help_text="Positive for NS, negative for EW")
     
     class Meta:
@@ -49,7 +71,7 @@ class Result(models.Model):
         Return imps of the NS couple.
         """
         total_imps = sum(score_to_imps(self.score-r.score) for r in self.board.result_set.all())
-        normalized_imps = float(total_imps) / (self.board.result_set.count() - 1) if self.board.result_set.count() > 1 else 0.0
+        normalized_imps = Fraction(total_imps, self.board.result_set.count() - 1) if self.board.result_set.count() > 1 else 0
         return normalized_imps
     
     """
@@ -72,6 +94,6 @@ class Result(models.Model):
         elif couple == self.ew_couple:
             return -self.ns_imps()
         else:
-            return 0.0
+            return 0
 
 

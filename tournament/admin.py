@@ -16,5 +16,6 @@ class BoardAdmin(admin.ModelAdmin):
 
 @admin.register(Result)
 class ResultAdmin(admin.ModelAdmin):
-    list_display = ('board', 'ns_couple', 'ew_couple', 'score', 'ns_imps')
+    list_display = ('board', 'ns_couple', 'ew_couple')
+    # list_display = ('board', 'ns_couple', 'ew_couple', 'score', 'ns_imps')
     list_filter = ('board',)

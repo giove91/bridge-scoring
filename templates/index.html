@@ -32,9 +32,35 @@
 
 <body>
 
-<div class="container">
+<div class="container my-4">
 
-Ciao ciao
+<h1 class="pb-4">Tournament results</h1>
+
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Pair</th>
+      <th scope="col">IMPs</th>
+      {% for board in boards %}
+        <th class="text-center" scope="col">{{ board.number }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for couple, imps, rank, boards_imps in scoreboard %}
+    <tr>
+      <th scope="row">{{ rank }}</th>
+      <td>{{ couple.name }}</td>
+      <td>{{ imps|floatformat:1 }}</td>
+      
+      {% for b_imps in boards_imps %}
+        <td class="text-center {% if b_imps is not None %}{% if b_imps > 0 %}table-success{% elif b_imps < 0 %}table-danger{% else %}table-secondary{% endif %}{% endif %}">{% if b_imps is not None %}{{ b_imps|floatformat:1 }}{% endif %}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 </div>
 
