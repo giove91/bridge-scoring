@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from collections import Counter
 from django.db import models
+
+from score_to_imps import score_to_imps
 
 
 class Couple(models.Model):
@@ -19,6 +22,18 @@ class Board(models.Model):
     
     class Meta:
         ordering = ('number',)
+    
+    
+    def get_imps(self):
+        imps = Counter()
+        
+        for result in self.results:
+            couples = result.couples()
+            score = result.score
+            
+            for r in self.results:
+                s = r.score
+                score_to_imps(score-s)
 
 
 class Result(models.Model):
@@ -30,3 +45,7 @@ class Result(models.Model):
     class Meta:
         ordering = ('board',)
         unique_together = [('board', 'ns_couple'), ('board', 'ew_couple')]
+    
+    
+    def couples(self):
+        return (self.ns_couple, self.ew_couple)
