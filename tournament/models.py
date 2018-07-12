@@ -15,16 +15,16 @@ class Board(models.Model):
     number = models.IntegerField()
     
     def __str__(self):
-        return "Board %d" % self.name
+        return "Board %d" % self.number
     
     class Meta:
-        ordering = ('name',)
+        ordering = ('number',)
 
 
 class Result(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    ns_couple = models.ForeignKey(Couple, on_delete=models.CASCADE)
-    ew_couple = models.ForeignKey(Couple, on_delete=models.CASCADE)
+    ns_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, related_name="ns_results")
+    ew_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, related_name="ew_results")
     score = models.IntegerField(help_text="Positive for NS, negative for EW")
     
     class Meta:
