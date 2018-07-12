@@ -15,7 +15,7 @@ class Couple(models.Model):
 
     
     def imps(self):
-        return sum(result.couples_imps()[self] for result in Result.objects.all())
+        return sum(result.couple_imps(self) for result in Result.objects.all())
 
 
 class Board(models.Model):
@@ -31,8 +31,8 @@ class Board(models.Model):
 
 class Result(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
-    ns_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, related_name="ns_results")
-    ew_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, related_name="ew_results")
+    ns_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, verbose_name="NS couple", related_name="ns_results")
+    ew_couple = models.ForeignKey(Couple, on_delete=models.CASCADE, verbose_name="EW couple", related_name="ew_results")
     score = models.IntegerField(help_text="Positive for NS, negative for EW")
     
     class Meta:
@@ -52,7 +52,7 @@ class Result(models.Model):
         normalized_imps = float(total_imps) / (self.board.result_set.count() - 1) if self.board.result_set.count() > 1 else 0.0
         return normalized_imps
     
-    
+    """
     def couples_imps(self):
         imps = Counter()
         
@@ -61,5 +61,17 @@ class Result(models.Model):
             imps[couples[i]] = (-1)**i * self.ns_imps()
         
         return imps
+    """
+    
+    def couple_imps(self, couple):
+        """
+        Return imps of a given couple.
+        """
+        if couple == self.ns_couple:
+            return self.ns_imps()
+        elif couple == self.ew_couple:
+            return -self.ns_imps()
+        else:
+            return 0.0
 
 
